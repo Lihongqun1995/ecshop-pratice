@@ -1,0 +1,71 @@
+<layout name="layout" />
+
+<div class="main-div">
+    <form name="main_form" method="POST" action="__SELF__" enctype="multipart/form-data" >
+    	<input type="hidden" name="id" value="<?php echo $data['id']; ?>" />
+        <table cellspacing="1" cellpadding="3" width="100%">
+            <tr>
+                <td class="label">角色名称：</td>
+                <td>
+                    <input  type="text" name="role_name" value="<?php echo $data['role_name']; ?>" />
+                </td>
+            </tr>
+            <tr>
+                <td class="label">权限列表：</td>
+                <td>
+	                <?php foreach($priData as $k=>$v):
+	                	if(strpos(','.$rpData.',',','.$v['id'].',')!==FALSE){
+							$check="checked='checked'";
+						}else{
+							$check="";
+						}
+	                ?>
+	                	<?php echo str_repeat('-',8*$v['level']);?>
+	                    <input <?php echo $check;?> level_id="<?php echo $v['level'];?>" type="checkbox" name="pri_id[]" value="<?php echo $v['id'];?>" /><?php echo $v['pri_name'];?></br>
+	               	<?php endforeach;?>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="99" align="center">
+                    <input type="submit" class="button" value=" 确定 " />
+                    <input type="reset" class="button" value=" 重置 " />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+
+<script>
+	$(":checkbox").click(function(){
+		var tmp_level_id = level_id = $(this).attr('level_id');
+		//所有子元素选中
+		if($(this).prop("checked")){
+			$(this).nextAll(":checkbox").each(function(k,v){
+				if($(v).attr('level_id') > level_id){
+					$(v).prop('checked','checked');
+				}else{
+					return false;
+				}
+			});
+			//所有上级元素选中
+			$(this).prevAll(":checkbox").each(function(k,v){
+				if($(v).attr("level_id") < tmp_level_id){
+					$(v).prop("checked","checked");
+					tmp_level_id--;
+				}else{
+					return false;
+				}
+			});
+		}else{
+			$(this).nextAll(":checkbox").each(function(k,v){
+				if($(v).attr('level_id') > level_id){
+					$(v).removeAttr("checked");
+				}else{
+					return false;
+				}
+			});
+		}
+	});
+	
+</script>

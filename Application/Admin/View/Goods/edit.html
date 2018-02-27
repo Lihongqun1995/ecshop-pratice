@@ -1,0 +1,390 @@
+<layout name="layout" />
+<style>
+#ul_pic_list li{
+	margin:5px;
+	list-style-type:none;
+}
+#old_pic_list li{
+	float:left;
+	width:150px;
+	height:150px;
+	margin:5px;
+	list-style-type:none;
+}
+</style>
+<div class="tab-div">
+    <div id="tabbar-div">
+        <p>
+            <span class="tab-front">通用信息</span>
+            <span class="tab-back">商品描述</span>
+            <span class="tab-back">会员价格</span>
+            <span class="tab-back">商品属性</span>
+            <span class="tab-back">商品相册</span>
+        </p>
+    </div>
+    <div id="tabbody-div">
+        <form enctype="multipart/form-data" action="__SELF__" method="post">
+        	<input type="hidden" name="id" value="<?php echo I('get.id');?>" />
+            <table width="90%" class="tab_table" align="center">
+            	<tr>
+	                <td class="label">上级分类：</td>
+	                <td>
+	                    <select name="cat_id">
+	                    	<option value="">请选择</option>
+	                    	<?php foreach($catData as $k=>$v):
+	                    		if($v['id']==$data['cat_id']){
+									$select = "selected='selected'";
+								}else{
+									$select = '';
+								}
+	                    	?>
+	                    	<option <?php echo $select;?> value="<?php echo $v['id']?>" ><?php echo str_repeat('-',8*$v['level']).$v['cat_name']; ?></option>
+	                    	<?php endforeach;?>
+	                    </select>
+	                </td>
+            	</tr>
+            	<tr>
+	                <td class="label">扩展分类：<input onclick="$('#cat_list').append($('#cat_list').find('li').eq(0).clone());" type="button" value="添加" /></td>
+	                <td>
+	                    <ul id="cat_list">
+		                    <?php if($gcData):?>
+		                    	<?php foreach ($gcData as $k1=>$v1):?>
+			                    	<li>
+			                    		<select name="ext_cat_id[]">
+					                    	<option value="">请选择</option>
+					                    	<?php foreach($catData as $k=>$v):
+			                    		if($v1['cat_id']==$v['id']){
+											$select = "selected='selected'";
+										}else{
+											$select = '';
+										}
+			                    	?>
+					                    	<option <?php echo $select;?> value="<?php echo $v['id']?>"><?php echo str_repeat('-',8*$v['level']).$v['cat_name']; ?></option>
+					                    	<?php endforeach;?>
+					                    </select>
+			                    	</li>
+			                    <?php endforeach;?>
+			                 <?php else:?>
+			                 	<li>
+		                    		<select name="ext_cat_id[]">
+				                    	<option value="">请选择</option>
+				                    	<?php foreach($catData as $k=>$v):
+			                    		if($v1['cat_id']==$v['id']){
+											$select = "selected='selected'";
+										}else{
+											$select = '';
+										}
+			                    	?>
+				                    	<option <?php echo $select;?> value="<?php echo $v['id']?>"><?php echo str_repeat('-',8*$v['level']).$v['cat_name']; ?></option>
+				                    	<?php endforeach;?>
+				                    </select>
+		                    	</li> 
+		                    <?php endif;?>  
+	                    </ul>
+	                </td>
+            	</tr>
+            	
+            	<tr>
+                    <td class="label">所在品牌：</td>
+                    <td>
+                    <?php buildSelect('brand','brand_id','id','brand_name',$data['brand_id']);?>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">商品名称：</td>
+                    <td><input type="text" name="goods_name" value="<?php echo $data['goods_name'];?>"size="60" />
+                    <span class="require-field">*</span></td>
+                </tr>
+                <tr>
+                    <td class="label">logo：</td>
+                    <td><img src="/Public/Uploads/<?php echo $data['sm_logo'];?>" /><br />
+                    <input type="file" name="logo" value=""size="60" /></td>
+                </tr>
+                <tr>
+                    <td class="label">市场售价：</td>
+                    <td>
+                        <input type="text" name="market_price" value="<?php echo $data['market_price'];?>" size="20" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">本店售价：</td>
+                    <td>
+                        <input type="text" name="shop_price" value="<?php echo $data['shop_price'];?>" size="20"/>
+                        <span class="require-field">*</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">是否上架：</td>
+                    <td>
+                        <input type="radio" name="is_on_sale" value="是" <?php if($data['is_on_sale']=="是") echo "checked='checked'";?> />是
+                        <input type="radio" name="is_on_sale" value="否" <?php if($data['is_on_sale']=="否") echo "checked='checked'";?> /> 否
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">促销价格：</td>
+                    <td>
+                        价格：￥<input type="text" name="promote_price" value="<?php echo $data['promote_price'];?>" size="20"/>元
+                        开始时间：<input type="text" id="promote_start_date" name="promote_start_date" value="<?php echo $data['promote_start_date'];?>" size="20"/>
+                       结束时间：<input type="text" id="promote_end_date" name="promote_end_date" value="<?php echo $data['promote_end_date'];?>" size="20"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">是否新品：</td>
+                    <td>
+                        <input type="radio" name="is_new" value="是" <?php if($data['is_new']=='是') echo 'checked="checked"';?>/> 是
+                        <input type="radio" name="is_new" value="否" <?php if($data['is_new']=='否') echo 'checked="checked"';?>/> 否
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">是否热卖：</td>
+                    <td>
+                        <input type="radio" name="is_hot" value="是" <?php if($data['is_hot']=='是') echo 'checked="checked"';?> /> 是
+                        <input type="radio" name="is_hot" value="否" <?php if($data['is_hot']=='否') echo 'checked="checked"';?> /> 否
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">是否精品：</td>
+                    <td>
+                        <input type="radio" name="is_best" value="是" <?php if($data['is_best']=='是') echo 'checked="checked"';?> /> 是
+                        <input type="radio" name="is_best" value="否" <?php if($data['is_best']=='否') echo 'checked="checked"';?> /> 否
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">排位：</td>
+                    <td>
+                        <input type="text" name="sort_num" value="<?php echo $data['sort_num'];?>" size="10"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">是否推荐：</td>
+                    <td>
+                        <input type="radio" name="is_floor" value="是" <?php if($data['is_floor']=='是') echo 'checked="checked"';?> /> 是
+                        <input type="radio" name="is_floor" value="否" <?php if($data['is_floor']=='否') echo 'checked="checked"';?> /> 否
+                    </td>
+                </tr>
+            </table>
+            <table style="display:none;" width="90%" class="tab_table" align="center">
+                <tr>
+                    <td class="label">商品描述：</td>
+                    <td>
+                        <textarea id="goods_desc" name="goods_desc" cols="40" rows="3" value="<?php echo $data['goods_desc'];?>"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <table style="display:none;" width="90%" class="tab_table" align="center">
+            	<tr>
+                    <td class="label">会员价格：</td>
+                    <td>
+                    	
+                       <?php foreach ($mlData as $k=>$v):?>
+                       <?php echo $v['level_name'];?>:￥<input type="text" name="member_price[<?php echo $v['id'];?>]" value="<?php echo $_mpData[$v['id']];?>" size="8"/>
+                       <?php echo $_mpData[$v['id']];?>元<br/>
+                       <?php endforeach;?>
+                    </td>
+                </tr>
+            </table>
+            <table style="display:none;" width="90%" class="tab_table" align="center">
+            	<tr>
+	                <td>
+	                    所属类型：<?php buildSelect('Type','type_id','id','type_name',$data['type_id']); ?>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td>
+	                    <ul id="attr_list">
+	                    	<?php $attrId=array();
+	                    	 foreach ($gaData as $k=>$v):
+	                    		if(in_array($v['attr_id'],$attrId)){
+									$opt = '[-]';
+								}else{
+									$opt = '[+]';
+									$attrId[] = $v['attr_id'];
+								}
+	                    	?>
+		                    	<li>
+		                    		<input type="hidden" name="goods_attr_id[]" value="<?php echo $v['id'];?>"/>
+		                    		<?php if($v['attr_type'] == '可选'):?>
+		                    		<a onclick="addNewAttr(this)" href="#"><?php echo $opt;?></a>
+		                    		<?php endif;?>
+		                    		<?php echo $v['attr_name'];?>
+		                    		<?php if($v['attr_option_values']):
+	                    				$attr = explode(',',$v['attr_option_values']);
+	                    			?>
+		                    		<select name="attr_value[<?php echo $v['attr_id']?>][]">
+		                    			
+		                    			<option value="">请选择...</option>
+		                    			<?php foreach($attr as $k1=>$v1):
+		                    			if($v1 == $v['attr_value']){
+		                    				$select="selected='selected'";
+		                    			}else{
+		                    				$select='';
+		                    			}
+		                    			?>
+			                    			<option <?php echo $select;?> value="<?php echo $v1;?>"><?php echo $v1;?></option>	
+			                    		<?php endforeach;?>
+		                    		</select>
+		                    		<?php else:?>
+		                    			<input type="text" name="attr_value[<?php echo $v['attr_id']?>][]" value="<?php echo $v['attr_value'];?>">
+		                    		<?php endif;?>
+		                    		
+	                    	</li>
+	                    	<?php endforeach;?>
+	                    </ul>
+	                </td>
+	           </tr>
+            </table>
+            <table style="display:none;" width="90%" class="tab_table" align="center">
+            	<tr>
+                    <td>
+                    	<input type="button" id="btn_add_pic" value="添加一张"/>
+                    	<hr/>
+                    	<ul id="ul_pic_list"></ul>
+                    	<hr/>
+                    	<ul id="old_pic_list">
+                    		<?php foreach ($gpData as $k=>$v):?>
+                       			<li>
+                       				<input class="btn_del_pic" pic_id="<?php echo $v['id'];?>" type="button" value="删除"/><br />
+                       				<?php showImage($v['mid_pic'],150); ?>
+                       			</li>
+                       		<?php endforeach;?>
+                    	</ul>
+                        
+                    </td>
+                </tr>
+            </table>
+            
+            <div class="button-div">
+                <input type="submit" value=" 确定 " class="button"/>
+                <input type="reset" value=" 重置 " class="button" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<link href="__PUBLIC__/umeditor1_2_2-utf8-php/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/umeditor1_2_2-utf8-php/third-party/jquery.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor1_2_2-utf8-php/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor1_2_2-utf8-php/umeditor.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/umeditor1_2_2-utf8-php/lang/zh-cn/zh-cn.js"></script>
+<link href="__PUBLIC__/datetimepicker/jquery-ui-1.9.2.custom.min.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/datetimepicker/jquery-ui-1.9.2.custom.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/datetimepicker/datepicker-zh_cn.js"></script>
+<link rel="stylesheet" media="all" type="text/css" href="__PUBLIC__/datetimepicker/time/jquery-ui-timepicker-addon.min.css" />
+<script type="text/javascript" src="__PUBLIC__/datetimepicker/time/jquery-ui-timepicker-addon.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/datetimepicker/time/i18n/jquery-ui-timepicker-addon-i18n.min.js"></script>
+<script>
+    //时间插件
+	$.timepicker.setDefaults($.timepicker.regional['zh-CN']);
+	$("#promote_start_date").datetimepicker();
+	$("#promote_end_date").datetimepicker();
+	//文本编译器插件
+	UM.getEditor('goods_desc',{
+		initialFrameWidth:"100%", //初始化编辑器宽度,默认500
+        initialFrameHeight:350  //初始化编辑器高度,默认500
+	});
+	$("#tabbar-div p span").click(function(){
+		var i = $(this).index();
+		$(".tab_table").hide();
+		$(".tab_table").eq(i).show();
+		$('.tab-front').removeClass("tab-front");
+		$(this).removeClass("tab_back").addClass("tab-front");
+	});
+	$('#btn_add_pic').click(function(){
+		var file = '<li><input type="file" name="pic[]" /></li>';
+		$("#ul_pic_list").append(file);
+	});
+	//删除图片Ajax
+	$(".btn_del_pic").click(function(){
+		if(confirm('确定要删除吗?')){
+			var li = $(this).parent();
+			var pid = $(this).attr('pic_id');
+		}
+		$.ajax({
+			type:"GET",
+			url:"<?php echo U('ajaxDelPic','',FALSE); ?>/picid/"+pid,
+			success:function(data){
+				li.remove();
+			}		
+		})
+	})
+	//Ajax获取类型的属性
+	$("select[name=type_id]").change(function(){
+		var typeId=$(this).val();
+		
+		if(typeId>0){
+			$.ajax({
+				type:"GET",
+				url:"<?php echo U('ajaxGetAttr','',FALSE);?>/type_id/"+typeId,
+				dataType:"json",
+				success:function(data){
+					console.log(1);
+					var li='';
+					$(data).each(function(k,v){
+						li += '<li >';
+						if(v.attr_type == '可选'){
+							li += '<a onclick="addNewAttr(this)" href="#">[+]</a>';
+						}
+						li += v.attr_name+':';
+						if(v.attr_option_values == ''){
+							li += '<input type="text" name="attr_value['+v['id']+'][]"/>';
+						}else{
+							li +='<select name="attr_value['+v['id']+'][]"><option value="">请选择...</option>';
+							var _attr=v.attr_option_values.split(',');
+							for(var i=0;i<_attr.length;i++){
+								li += '<option value="'+_attr[i]+'">';
+								li += _attr[i];
+								li +='</option>';
+							}
+							li +='</select>';
+						}
+						li +='</li>';
+					});
+					console.log(li);
+					$('#attr_list').html(li);
+				},
+				error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    // 状态码
+                    console.log(XMLHttpRequest.status);
+                    // 状态
+                    console.log(XMLHttpRequest.readyState);
+                    // 错误信息   
+                    console.log(textStatus);
+                }
+			})
+		}else{
+			$('#attr_list').html('');
+		}
+	});
+	//[+]号点击增加选项框
+	function addNewAttr(a){
+		var li = $(a).parent();
+		if($(a).text() == '[+]'){
+			var newLi = li.clone();
+			newLi.find('option:selected').removeAttr('selected');
+			newLi.find('input[name="goods_attr_id[]"]').val('');
+			newLi.find('a').text('[-]');
+			li.after(newLi);
+		}else{
+			li.remove();
+			var gaid = li.find("input['goods_attr_id[]']").val();
+			if(gaid == ''){
+				li.remove();
+			}else{
+				if(confirm('如果删除了这个属性，那么相关的库存量数据也会被删除！')){
+					$.ajax({
+						type:"GET",
+						url:"<?php echo U('ajaxDelAttr?goods_id='.$data['id'],'',FALSE);?>/gaid/"+gaid,
+						success:function(data){
+							li.remove();
+						}
+					})
+				}
+			}
+		}
+	}
+</script>
+
+
+

@@ -1,0 +1,128 @@
+<layout name="layout" />
+
+<div class="form-div">
+    <form action="__ACTION__" method = "GET" name="searchForm">
+    	<p>
+    		所属<?php echo session('id');?>分类:
+            <select name="cat_id">
+            	<option value="">请选择</option>
+            	<?php foreach($catData as $k=>$v):
+					$id = I('get.cat_id');
+	                if($v['id']==$id){
+						$select = "selected='selected'";
+					}else{
+						$select = '';
+					}
+	                    	?>
+            	<option <?php echo $select;?> value="<?php echo $v['id']?>" ><?php echo str_repeat('-',8*$v['level']).$v['cat_name']; ?></option>
+            	<?php endforeach;?>
+            </select>
+	    </p>  
+    	<p>
+     		所属品牌：
+     		<?php buildSelect('brand','brand_id','id','brand_name',I('get.brand_id'));?>
+     	</p>
+     	<p>
+     		商品名称：
+     		<input value="<?php echo I('get.gn')?>" type="text" name="gn" size="60">
+     	</p>
+     	<p>
+     		价    格：
+     		从<input value="<?php echo I('get.fp')?>" type="text" name="fp" size="5">
+     		到<input value="<?php echo I('get.tp')?>" type="text" name="tp" size="5">
+     	</p>
+     	<p>
+     		是否上架：
+     		<?php $ios = I('get.ios');?>
+     		<input type="radio" name="ios" value="" <?php if($ios=='') echo 'checked="checked"';?>>全部
+     		<input type="radio" name="ios" value="是" <?php if($ios=='是') echo 'checked="checked"';?>>上架
+     		<input type="radio" name="ios" value="否" <?php if($ios=='否') echo 'checked="checked"';?>>下架
+     	</p>
+     	<p>
+     		添加时间：
+     		从<input id="fa" value="<?php echo I('get.fa')?>" type="text" name="fa" size="20">
+     		到<input id="ta" value="<?php echo I('get.ta')?>" type="text" name="ta" size="20">
+     	</p>
+     	<p>
+	     	<?php $odby = I('get.odby','id_desc')?>
+	     	<input onclick="this.parentNode.parentNode.submit()" type="radio" name="odby" value="id_desc" <?php if($odby=='id_desc') echo 'checked="checked"';?>>以添加时间降序
+	     	<input onclick="this.parentNode.parentNode.submit()" type="radio" name="odby" value="id_asc" <?php if($odby=='id_asc') echo 'checked="checked"';?>>以添加时间升序
+	     	<input onclick="this.parentNode.parentNode.submit()" type="radio" name="odby" value="price_desc" <?php if($odby=='price_desc') echo 'checked="checked"';?>>以价格降序
+	     	<input onclick="this.parentNode.parentNode.submit()" type="radio" name="odby" value="price_asc" <?php if($odby=='price_asc') echo 'checked="checked"';?>>以价格升序
+	     	<br/> 
+	     </p>    	
+        <input type="submit" value=" 搜索 " class="button" />
+    </form>
+</div>
+
+<!-- 商品列表 -->
+<form method="post" action="" name="listForm" onsubmit="">
+    <div class="list-div" id="listDiv">
+        <table cellpadding="3" cellspacing="1">
+            <tr>
+                <th>编号</th>
+                <th>主分类</th>
+                <th>扩展分类</th>
+                <th>品牌</th>
+                <th>商品名称</th>
+                <th>logo</th>
+                <th>市场价格</th>
+                <th>本店价格</th>
+                <th>是否上架</th>
+                <th>添加时间</th>
+                <th>操作</th>
+            </tr>
+            
+
+            <?php foreach ($data as $k=>$v):?>
+            <tr class="tron">
+                <td align="center"><?php echo $v['id'];?></td>
+                <td align="center"><?php echo $v['cat_name'];?></td>
+                <td align="center"><?php echo $v['ext_cat_name'];?></td>
+                <td align="center"><?php echo $v['brand_id'];?></td>
+                <td align="center" class="first-cell"><span><?php echo $v['goods_name'];?></span></td>
+                <td align="center"><?php showImage($v['sm_logo'])?></td>
+                <td align="center"><?php echo $v['market_price'];?></td>
+                <td align="center"><?php echo $v['shop_price'];?></td>
+                <td align="center"><?php echo $v['is_on_sale'];?></td>
+                <td align="center"><?php echo $v['addtime'];?></td>
+                <td align="center">
+                	<a href="<?php echo U("goods_number?id=".$v['id']);?>">库存量</a>
+                	<a href="<?php echo U("edit?id=".$v['id']);?>">修改</a>
+                	<a onclick="return confirm("确定要删除吗？")" href="<?php echo U("delete?id=".$v['id']);?>">删除</a>
+                </td>
+                
+              </tr>
+            <?php endforeach;?>
+
+        </table>
+
+    <!-- 分页开始 -->
+        <table id="page-table" cellspacing="0">
+            <tr>
+                <td width="80%">&nbsp;</td>
+                <td align="center" nowrap="true">
+                    <?php echo $page;?>
+                </td>
+            </tr>
+        </table>
+    <!-- 分页结束 -->
+    </div>
+</form>
+
+
+
+</html>
+<script type="text/javascript" src="__PUBLIC__/umeditor1_2_2-utf8-php/third-party/jquery.min.js"></script>
+<link href="__PUBLIC__/datetimepicker/jquery-ui-1.9.2.custom.min.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/datetimepicker/jquery-ui-1.9.2.custom.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/datetimepicker/datepicker-zh_cn.js"></script>
+<link rel="stylesheet" media="all" type="text/css" href="__PUBLIC__/datetimepicker/time/jquery-ui-timepicker-addon.min.css" />
+<script type="text/javascript" src="__PUBLIC__/datetimepicker/time/jquery-ui-timepicker-addon.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/datetimepicker/time/i18n/jquery-ui-timepicker-addon-i18n.min.js"></script>
+<script>
+$.timepicker.setDefaults($.timepicker.regional['zh-CN']);
+$("#fa").datetimepicker();
+$("#ta").datetimepicker();
+</script>
+<script type="text/javascript" src="__PUBLIC__/Admin/Js/tron.js"></script>
